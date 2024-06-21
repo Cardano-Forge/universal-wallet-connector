@@ -1,5 +1,7 @@
 import type { WalletKey } from "@/lib/utils";
 
+import { dispatchEvent } from "@/internal/events";
+
 import {
   clearConnectedWallets,
   getConnectedWallet,
@@ -43,7 +45,29 @@ export async function connect(
 ): Promise<ExtendedWalletHandler> {
   if (!isBrowser() && !defaults.ignoreUnsafeUsageError) {
     console.error(UNSAFE_LIB_USAGE_ERROR);
+    dispatchEvent(
+      "debug",
+      "log",
+      "warning",
+      {
+        message: "Trying to connect outside of a browser environment",
+        source: "connect",
+      },
+      key,
+    );
   }
+
+  dispatchEvent(
+    "debug",
+    "log",
+    "debug",
+    {
+      message: "Connecting wallet...",
+      data: { params: { key, configOverrides } },
+      source: "connect",
+    },
+    key,
+  );
 
   const config = getConnectConfig(configOverrides);
 
@@ -66,6 +90,22 @@ export async function connect(
   const extendedHandler = extend(handler);
 
   setConnectedWallet(key, extendedHandler);
+
+  dispatchEvent(
+    "debug",
+    "log",
+    "debug",
+    {
+      message: "Connected",
+      data: {
+        params: { key, configOverrides },
+        handler: extendedHandler,
+        config,
+      },
+      source: "connect",
+    },
+    key,
+  );
 
   return extendedHandler;
 }

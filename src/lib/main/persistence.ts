@@ -1,3 +1,4 @@
+import { dispatchEvent } from "@/internal/events";
 import { STORAGE_KEYS } from "../server";
 import { defaults } from "./config";
 
@@ -25,19 +26,44 @@ export const defaultStorage: WeldStorage = {
       for (const str of arr) {
         const [k, v] = str.split("=");
         if (k === key) {
+          dispatchEvent("debug", "log", "debug", {
+            message: "Retrieved cookie",
+            data: { key, value: v },
+            source: "defaultStorage",
+          });
           return v;
         }
       }
+      dispatchEvent("debug", "log", "debug", {
+        message: "Cookie not found",
+        data: { key },
+        source: "defaultStorage",
+      });
       return undefined;
-    } catch {
+    } catch (error) {
+      dispatchEvent("debug", "log", "debug", {
+        message: "Error while retrieving cookie",
+        data: { key, error },
+        source: "defaultStorage",
+      });
       return undefined;
     }
   },
   set(key, value) {
     const exp = new Date(Date.now() + 400 * 24 * 60 * 60 * 1000);
+    dispatchEvent("debug", "log", "debug", {
+      message: "Setting cookie",
+      data: { key, value, exp },
+      source: "defaultStorage",
+    });
     document.cookie = `${key}=${value}; expires=${exp.toUTCString()}; path=/;`;
   },
   remove(key) {
+    dispatchEvent("debug", "log", "debug", {
+      message: "Removing cookie",
+      data: { key },
+      source: "defaultStorage",
+    });
     document.cookie = `${key}=; expires=${new Date(0).toUTCString()}; path=/;`;
   },
 };

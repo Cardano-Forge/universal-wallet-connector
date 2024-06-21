@@ -37,6 +37,14 @@ export type EventsDef = {
       };
     };
   };
+  debug: {
+    log: {
+      debug: { message: string; data?: unknown; source: string };
+      info: { message: string; data?: unknown; source: string };
+      warning: { message: string; data?: unknown; source: string };
+      error: { message: string; data?: unknown; source: string };
+    };
+  };
 };
 
 export type Scope = keyof EventsDef;
@@ -149,7 +157,7 @@ export function dispatchEvent<
   TScope extends Scope,
   TNs extends Ns<TScope>,
   TType extends keyof EventsDef[TScope][TNs],
->(key: string, scope: TScope, ns: TNs, type: TType, data: EventsDef[TScope][TNs][TType]) {
+>(scope: TScope, ns: TNs, type: TType, data: EventsDef[TScope][TNs][TType], key?: string) {
   document.dispatchEvent(new CustomEvent("weld:*", { detail: { scope, ns, type, data, key } }));
   document.dispatchEvent(new CustomEvent(`weld:${scope}.*`, { detail: { ns, type, data, key } }));
   document.dispatchEvent(
@@ -157,14 +165,22 @@ export function dispatchEvent<
       detail: { type, data, key },
     }),
   );
-  document.dispatchEvent(
-    new CustomEvent(`weld:${scope}.${String(ns)}.${String(type)}.*`, {
-      detail: { data, key },
-    }),
-  );
-  document.dispatchEvent(
-    new CustomEvent(`weld:${scope}.${String(ns)}.${String(type)}.${key}`, {
-      detail: { data },
-    }),
-  );
+  if (key) {
+    document.dispatchEvent(
+      new CustomEvent(`weld:${scope}.${String(ns)}.${String(type)}.*`, {
+        detail: { data, key },
+      }),
+    );
+    document.dispatchEvent(
+      new CustomEvent(`weld:${scope}.${String(ns)}.${String(type)}.${key}`, {
+        detail: { data },
+      }),
+    );
+  } else {
+    document.dispatchEvent(
+      new CustomEvent(`weld:${scope}.${String(ns)}.${String(type)}`, {
+        detail: { data },
+      }),
+    );
+  }
 }

@@ -21,13 +21,13 @@ export function getDefaultWalletConnector<TConstructor extends typeof DefaultWal
   HandlerConstructor?: TConstructor,
 ) {
   return async (key: string, config: WalletConfig): Promise<InstanceType<TConstructor>> => {
-    dispatchEvent(key, "wallet", "connection", "initiate", undefined);
+    dispatchEvent("wallet", "connection", "initiate", undefined, key);
 
     const defaultApi = await getWindowCardano({ key });
     if (!defaultApi) {
       const message = "Could not retrieve the wallet API";
       const error = new WalletConnectionError(message);
-      dispatchEvent(key, "wallet", "connection", "error", { error });
+      dispatchEvent("wallet", "connection", "error", { error }, key);
       throw error;
     }
 
@@ -37,7 +37,7 @@ export function getDefaultWalletConnector<TConstructor extends typeof DefaultWal
     if (!enabledApi) {
       const message = "Could not enable the wallet";
       const error = new WalletConnectionError(message);
-      dispatchEvent(key, "wallet", "connection", "error", { error });
+      dispatchEvent("wallet", "connection", "error", { error }, key);
       throw error;
     }
 
@@ -48,7 +48,7 @@ export function getDefaultWalletConnector<TConstructor extends typeof DefaultWal
       handler = new DefaultWalletHandler(info, defaultApi, enabledApi, config);
     }
 
-    dispatchEvent(key, "wallet", "connection", "success", { handler });
+    dispatchEvent("wallet", "connection", "success", { handler }, key);
     return handler as InstanceType<TConstructor>;
   };
 }

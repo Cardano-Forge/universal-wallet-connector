@@ -87,10 +87,16 @@ export class DefaultWalletHandler implements WalletHandler {
     changeAddress = hexToBech32(changeAddress, "addr", networkId);
 
     if (changeAddress !== this._prevChangeAddress) {
-      dispatchEvent(this.info.key, "wallet", "change-address", "update", {
-        handler: this,
-        changeAddress,
-      });
+      dispatchEvent(
+        "wallet",
+        "change-address",
+        "update",
+        {
+          handler: this,
+          changeAddress,
+        },
+        this.info.key,
+      );
       this._prevChangeAddress = changeAddress;
     }
 
@@ -108,10 +114,16 @@ export class DefaultWalletHandler implements WalletHandler {
     const rewardAddress = hexToBech32(rewardAddresses[0], "stake", networkId);
 
     if (rewardAddress !== this._prevRewardAddress) {
-      dispatchEvent(this.info.key, "wallet", "reward-address", "update", {
-        handler: this,
-        rewardAddress,
-      });
+      dispatchEvent(
+        "wallet",
+        "reward-address",
+        "update",
+        {
+          handler: this,
+          rewardAddress,
+        },
+        this.info.key,
+      );
       this._prevRewardAddress = rewardAddress;
     }
 
@@ -126,10 +138,16 @@ export class DefaultWalletHandler implements WalletHandler {
     const networkId = await this._enabledApi.getNetworkId();
 
     if (networkId !== this._prevNetworkId) {
-      dispatchEvent(this.info.key, "wallet", "network", "update", {
-        handler: this,
-        networkId,
-      });
+      dispatchEvent(
+        "wallet",
+        "network",
+        "update",
+        {
+          handler: this,
+          networkId,
+        },
+        this.info.key,
+      );
       this._prevNetworkId = networkId;
     }
 
@@ -146,11 +164,17 @@ export class DefaultWalletHandler implements WalletHandler {
     if (balanceCbor !== this._prevBalance) {
       const balanceLovelace = decodeBalance(balanceCbor);
 
-      dispatchEvent(this.info.key, "wallet", "balance", "update", {
-        handler: this,
-        cbor: balanceCbor,
-        balanceLovelace: balanceLovelace,
-      });
+      dispatchEvent(
+        "wallet",
+        "balance",
+        "update",
+        {
+          handler: this,
+          cbor: balanceCbor,
+          balanceLovelace: balanceLovelace,
+        },
+        this.info.key,
+      );
       this._prevBalance = balanceCbor;
     }
 
@@ -295,7 +319,7 @@ export class DefaultWalletHandler implements WalletHandler {
         this.getChangeAddress(),
       ]);
     } catch (error) {
-      dispatchEvent(this.info.key, "wallet", "update", "error", { error });
+      dispatchEvent("wallet", "update", "error", { error }, this.info.key);
     } finally {
       this._isUpdating = false;
     }
