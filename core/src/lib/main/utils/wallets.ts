@@ -97,6 +97,14 @@ export const SUPPORTED_WALLETS: WalletInfo[] = [
 		website: "https://begin.is",
 		supportsTxChaining: false,
 	},
+	{
+		supported: true,
+		key: "magicmoney",
+		displayName: "MagicMoney Wallet",
+		icon: "https://raw.githubusercontent.com/cardano-forge/weld/main/images/wallets/magicmoney.svg",
+		website: "https://www.chainlensnft.info/",
+		supportsTxChaining: false,
+	},
 ];
 
 export const supportedWalletsMap = new Map<string, WalletInfo>(
